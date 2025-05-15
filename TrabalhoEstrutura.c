@@ -2,100 +2,81 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_LINHA 512
-#define MAX_STR 50
-#define TAM_INICIAL 10000
+#define MAX_LINHA 1024
+#define MAX_AMOSTRAS 10000
 
 typedef struct {
-    int age;
-    int cholesterol;
-    int heart_rate;
-    char diabetes[MAX_STR];
-    char family_history[MAX_STR];
-    char smoking[MAX_STR];
-    char obesity[MAX_STR];
-    char alcohol_consumption[MAX_STR];
-    int exercise_hours_per_week;
-    char diet[MAX_STR];
-    char previous_heart_problems[MAX_STR];
-    char medication_use[MAX_STR];
-    char stress_level[MAX_STR];
-    int sedentary_hours_per_day;
-    int income;
-    float bmi;
-    int triglycerides;
-    int physical_activity_days;
-    int sleep_hours_per_day;
-    int heart_attack_risk_binary;
-    float blood_sugar;
-    float ck_mb;
-    float troponin;
-    char heart_attack_risk_text[MAX_STR];
-    char gender[MAX_STR];
-    int systolic_bp;
-    int diastolic_bp;
-} RegistroPaciente;
+    int id;
+    int idade;
+    char sexo[10];
+    int colesterol;
+    int pressao;
+    int freq_cardiaca;
+    int diabetes;
+    float imc;
+    float risco_ataque;
+} Paciente;
 
-int main() {
-    FILE *arquivo = fopen("dataset.csv", "r");
-    if (arquivo == NULL) {
+int carregar_csv(const char *arquivo, Paciente dados[], int max_amostras) {
+    FILE *fp = fopen(arquivo, "r");
+    if (!fp) {
         perror("Erro ao abrir o arquivo");
-        return 1;
+        return -1;
     }
 
     char linha[MAX_LINHA];
-    fgets(linha, sizeof(linha), arquivo); // Ignora o cabeçalho
+    int count = 0;
 
-    int capacidade = TAM_INICIAL;
-    int total = 0;
-    RegistroPaciente *dados = malloc(capacidade * sizeof(RegistroPaciente));
-    if (dados == NULL) {
-        perror("Erro de alocação");
-        fclose(arquivo);
-        return 1;
-    }
+    // Ignorar cabeçalho
+    fgets(linha, MAX_LINHA, fp);
 
-    while (fgets(linha, sizeof(linha), arquivo)) {
-        if (total >= capacidade) {
-            capacidade *= 2;
-            RegistroPaciente *tmp = realloc(dados, capacidade * sizeof(RegistroPaciente));
-            if (tmp == NULL) {
-                perror("Erro ao realocar");
-                free(dados);
-                fclose(arquivo);
-                return 1;
+    while (fgets(linha, MAX_LINHA, fp) && count < max_amostras) {
+        char *token;
+        int coluna = 0;
+        token = strtok(linha, ",");
+        Paciente p;
+
+        while (token != NULL) {
+            switch (coluna) {
+                case 0: p.id = atoi(token); break;
+                case 1: p.idade = atoi(token); break;
+                case 2: strncpy(p.sexo, token, sizeof(p.sexo)); break;
+                case 3: p.colesterol = atoi(token); break;
+                case 4: p.pressao = atoi(token); break;
+                case 5: p.freq_cardiaca = atoi(token); break;
+                case 6: p.diabetes = atoi(token); break;
+                case 18: p.imc = atof(token); break;
+                case 26: p.risco_ataque = atof(token); break;
+                default: break;
             }
-            dados = tmp;
+            token = strtok(NULL, ",");
+            coluna++;
         }
 
-        RegistroPaciente *p = &dados[total];
-        linha[strcspn(linha, "\n")] = '\0'; // remove newline
-
-        sscanf(linha, "%d,%d,%d,%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%d,%49[^,],%49[^,],%49[^,],%49[^,],%d,%d,%f,%d,%d,%d,%d,%f,%f,%f,%49[^,],%49[^,],%d,%d",
-               &p->age, &p->cholesterol, &p->heart_rate, p->diabetes, p->family_history,
-               p->smoking, p->obesity, p->alcohol_consumption, &p->exercise_hours_per_week,
-               p->diet, p->previous_heart_problems, p->medication_use, p->stress_level,
-               &p->sedentary_hours_per_day, &p->income, &p->bmi, &p->triglycerides,
-               &p->physical_activity_days, &p->sleep_hours_per_day,
-               &p->heart_attack_risk_binary, &p->blood_sugar, &p->ck_mb, &p->troponin,
-               p->heart_attack_risk_text, p->gender, &p->systolic_bp, &p->diastolic_bp);
-
-        total++;
+        dados[count++] = p;
     }
 
-    fclose(arquivo);
+    fclose(fp);
+    return count;
+}
 
-    printf("Leituras carregadas: %d\n", total);
-    for (int i = 0; i < 5 && i < total; i++) {
-        printf("Paciente %d: Idade %d, Colesterol %d, IMC %.2f, Risco (Bin): %d, Risco (Texto): %s\n",
-               i + 1,
-               dados[i].age,
-               dados[i].cholesterol,
-               dados[i].bmi,
-               dados[i].heart_attack_risk_binary,
-               dados[i].heart_attack_risk_text);
+int main() {
+    Paciente pacientes[MAX_AMOSTRAS];
+    int total = carregar_csv("heart_attack_prediction_dataset.csv", pacientes, MAX_AMOSTRAS);
+
+    if (total > 0) {
+        printf("Leitura concluída: %d pacientes carregados.\n", total);
+        for(int i=0;i<5;i++){    
+            printf("Exemplo:\n");
+            printf("ID: %d | Idade: %d | Sexo: %s | Colesterol: %d | Pressão: %d | FC: %d | Diabetes: %d | IMC: %.1f | Risco: %.2f\n",
+                pacientes[i].id, pacientes[i].idade, pacientes[i].sexo,
+                pacientes[i].colesterol, pacientes[i].pressao,
+                pacientes[i].freq_cardiaca, pacientes[i].diabetes,
+                pacientes[i].imc, pacientes[i].risco_ataque);
+        }
+    } else {
+        printf("Nenhum paciente carregado.\n");
     }
 
-    free(dados);
     return 0;
 }
