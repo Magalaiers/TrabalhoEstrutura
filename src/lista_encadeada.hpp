@@ -3,15 +3,14 @@
 
 #include "csv_loader.hpp"
 
-// Estrutura de um nó da lista
+// Estrutura de nó da lista encadeada
 struct No {
     Paciente dado;
     No* proximo;
 
-    No(const Paciente& paciente) : dado(paciente), proximo(nullptr) {}
+    No(const Paciente& p) : dado(p), proximo(nullptr) {}
 };
 
-// Classe da lista encadeada
 class ListaEncadeada {
 private:
     No* cabeca;
@@ -20,13 +19,12 @@ public:
     ListaEncadeada();
     ~ListaEncadeada();
 
-    void inserir(const Paciente& paciente);
+    void inserir(const Paciente& paciente); // Insere no fim da lista
+    void inserirNoFim(const Paciente& paciente); // Versão explícita para inserção no fim
     bool removerPorId(int id);
     Paciente* buscarPorId(int id);
     void imprimirLista() const;
     int tamanho() const;
-
-    // Getter para acessar o primeiro nó (cabeca)
     No* getCabeca() const;
 };
 

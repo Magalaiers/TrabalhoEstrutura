@@ -1,10 +1,12 @@
 #include <iostream>
 #include <vector>
 #include <filesystem>
+#include <windows.h>
 #include "csv_loader.hpp"
 #include "lista_encadeada.hpp"
 
 int main() {
+    SetConsoleOutputCP(CP_UTF8);
     std::string path = "dataset/heart_attack_prediction_dataset.csv";
     if (!std::filesystem::exists(path)) {
         std::cerr << "Arquivo NÃO encontrado: " << path << "\n";
@@ -30,7 +32,7 @@ int main() {
     for (int i = 0; i < qtd_mostrar; ++i) {
         pacientes[i].imprimePaciente();
     }
-    
+
     ListaEncadeada lista;
     for (const auto& p : pacientes) {
         lista.inserir(p);
@@ -38,7 +40,7 @@ int main() {
 
     std::cout << "Total de pacientes na lista: " << lista.tamanho() << "\n";
 
-    std::cout << "\nMostrando os 5 primeiros pacientes:\n";
+    std::cout << "\nMostrando os 5 primeiros pacientes da lista encadeada:\n";
     No* atual = lista.getCabeca();  // Correto!
     int mostrados = 0;
     while (atual && mostrados < 5) {
