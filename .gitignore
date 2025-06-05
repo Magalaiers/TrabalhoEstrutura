@@ -1,0 +1,24 @@
+# Pasta de build
+build/
+bin/
+
+# Arquivos objeto e bibliotecas compiladas
+*.o
+*.a
+*.so
+*.lib
+*.dll
+
+# Executáveis (se não estiverem em build/ ou bin/)
+*.exe
+*.out
+
+# Arquivos de IDEs comuns
+.vscode/
+.idea/
+*.suo
+*.user
+*.DS_Store
+
+# Arquivos de dependência do compilador (geralmente .d)
+*.d
