@@ -72,12 +72,16 @@ class AVLTree:
         """Função pública para inserir uma chave na árvore."""
         self.root = self._insert_recursive(self.root, key)
 
+# Em src/estrutura_de_dados/arvore_avl.py, dentro da classe AVLTree
+
     def _insert_recursive(self, root, key):
         # 1. Realiza a inserção padrão de uma Árvore de Busca Binária
         if not root:
             return AVLNode(key)
         elif key < root.key:
             root.left = self._insert_recursive(root.left, key)
+        # Lida com chaves duplicadas, inserindo à direita
+        # (uma árvore AVL geralmente não tem chaves duplicadas, mas esta é uma forma de lidar com isso)
         else:
             root.right = self._insert_recursive(root.right, key)
 
@@ -87,23 +91,23 @@ class AVLTree:
         # 3. Calcula o fator de balanceamento para ver se o nó ficou desbalanceado
         balance = self._get_balance(root)
 
-        # 4. Se o nó ficou desbalanceado, existem 4 casos:
+        # 4. Se o nó ficou desbalanceado, existem 4 casos (AGORA USANDO A LÓGICA CORRETA)
 
-        # Caso 1: Rotação Simples à Direita (Esquerda-Esquerda)
-        if balance > 1 and key < root.left.key:
+        # Caso Esquerda-Esquerda (Rotação Simples à Direita)
+        if balance > 1 and self._get_balance(root.left) >= 0:
             return self._right_rotate(root)
 
-        # Caso 2: Rotação Simples à Esquerda (Direita-Direita)
-        if balance < -1 and key > root.right.key:
+        # Caso Direita-Direita (Rotação Simples à Esquerda)
+        if balance < -1 and self._get_balance(root.right) <= 0:
             return self._left_rotate(root)
 
-        # Caso 3: Rotação Dupla à Direita (Esquerda-Direita)
-        if balance > 1 and key > root.left.key:
+        # Caso Esquerda-Direita (Rotação Dupla à Direita)
+        if balance > 1 and self._get_balance(root.left) < 0:
             root.left = self._left_rotate(root.left)
             return self._right_rotate(root)
 
-        # Caso 4: Rotação Dupla à Esquerda (Direita-Esquerda)
-        if balance < -1 and key < root.right.key:
+        # Caso Direita-Esquerda (Rotação Dupla à Esquerda)
+        if balance < -1 and self._get_balance(root.right) > 0:
             root.right = self._right_rotate(root.right)
             return self._left_rotate(root)
 
