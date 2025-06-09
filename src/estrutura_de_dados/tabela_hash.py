@@ -1,4 +1,5 @@
 # src/data_structures/hash_table.py
+import sys
 
 class HashTable:
     """
@@ -61,5 +62,17 @@ class HashTable:
         # Procura pela chave no balde e a remove se encontrar
         for i, (existing_key, value) in enumerate(bucket):
             if existing_key == key:
-                del bucket[i]  # Remove o par (chave, valor) da lista do balde
-                return
+                del bucket[i]
+                return True # <-- Adicionar retorno de sucesso
+        return False # <-- Adicionar retorno se não encontrou
+    def get_memory_usage(self):
+        """
+        Calcula o uso de memória estimado da tabela hash.
+        Soma o tamanho da tabela principal, de cada balde (bucket) e de cada item.
+        """
+        size = sys.getsizeof(self.table)  # Tamanho da lista principal de baldes
+        for bucket in self.table:
+            size += sys.getsizeof(bucket) # Adiciona o tamanho da lista de cada balde
+            for item in bucket:
+                size += sys.getsizeof(item) # Adiciona o tamanho de cada par (chave, valor)
+        return size
