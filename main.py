@@ -39,10 +39,10 @@ if project_root not in sys.path:
 
 # --- Imports das suas Estruturas de Dados ---
 try:
-    from src.data_structures.linked_list import LinkedList
-    from src.data_structures.linked_list_optimized import LinkedListOptimized
-    from src.data_structures.hash_table import HashTable
-    from src.data_structures.avl_tree import AVLTree
+    from src.estrutura_de_dados.lista_encadeada import LinkedList
+    from src.estrutura_de_dados.lista_encadeada_otimizada import LinkedListOptimized
+    from src.estrutura_de_dados.tabela_hash import HashTable
+    from src.estrutura_de_dados.arvore_avl import AVLTree
     # Adicione aqui os imports das estruturas do seu colega quando estiverem prontas
     # Ex: from src.data_structures.skip_list import SkipList 
 except ImportError as e:
@@ -67,7 +67,7 @@ def carregar_recursos():
     print("Verificando e carregando recursos necessários...")
     try:
         if RECURSOS_CARREGADOS["df"] is None:
-            path_df = resource_path("data/raw/heart_attack_prediction_dataset.csv")
+            path_df = resource_path("dataset/heart_attack_prediction_dataset.csv")
             df = pd.read_csv(path_df)
             if 'Patient ID' in df.columns:
                 df = df.drop('Patient ID', axis=1)
